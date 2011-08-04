@@ -5,19 +5,19 @@
  *preconditions*
 The markup:
 
-<div id="someid">
-   <div class="wbSlide"></div>
-   <div class="wbSlide"></div>
-   <div class="wbSlide"></div>
-</div>
+`<div id="someid">`
+   `<div class="wbSlide"></div>`
+   `<div class="wbSlide"></div>`
+   `<div class="wbSlide"></div>`
+`</div>`
 
 The js:
 
-<script>
-$(document).ready(function(){
-	$("#someid").wbSlider();
-});
-</script>
+`<script>`
+`$(document).ready(function(){`
+	`$("#someid").wbSlider();`
+`});`
+`</script>`
 
 ===
 ### Important options:
