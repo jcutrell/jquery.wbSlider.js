@@ -5,11 +5,11 @@
  *preconditions*
 The markup:
 
-`<div id="someid">`
-   `<div class="wbSlide"></div>`
-   `<div class="wbSlide"></div>`
-   `<div class="wbSlide"></div>`
-`</div>`
+`<div id="someid">
+   <div class="wbSlide"></div>
+   <div class="wbSlide"></div>
+   <div class="wbSlide"></div>
+</div>`
 
 The js:
 
