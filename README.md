@@ -15,7 +15,31 @@ The js:
 `$(document).ready(function(){`  
 	`$("#someid").wbSlider();`  
 `});`  
-`</script>`  
+`</script>`
+### OTHER IMPORTANT DOCUMENTATION:
+There are events that you can trigger externally and also subscribe to externally (triggered off of targeted element).
+Subscribe to:
+
+*(triggered when slide transition starts)*
+
+* wbSlidePrevStart
+* wbSlideNextStart
+
+*(triggered when slide transition ends)*
+
+* wbSlidePrevDone 
+* wbSlideNextDone
+
+Trigger:
+
+*(causes transitions)*
+
+* slideControlNext
+* slideControlPrev
+
+This will allow other awesome stuff to happen, like multiple sliders and whatnot.
+Future: Trigger dynamic events (like "lastSlide"); Also, add in external "pause"/"play" event triggers
+
 ### Important options:  
 *Plugin default options*  
 * time : 7000,  
