@@ -1,128 +1,214 @@
-//preconditions
+// wbSlider v. 0.2 - requires jQuery 1.7 !!!
+
+//----- preconditions -----
 // This plugin relies on the following html structure
+//<div id="wrap"> <!-- this allows us to position the entire slider structure however we'd like. The inner-wrap will be set to relative positioning. -->
 // <div id="someid">
 //  <div class="wbSlide"></div>
 //  <div class="wbSlide"></div>
 //  <div class="wbSlide"></div>
 // </div>
-// The option "slideClass" will define what class is counted as slides. The default will be wbSlide
+//</div>
+// The "someid" div is where the slider is called; $("#someid").wbSlider(<options>);
+// The options are outlined in the default object at the beginning of the plugin.
 
-(function($) {
+;(function ( $, window, document, undefined ) {
 
-$.fn.wbSlider = function(options) {
-        // plugin default options
-        var defaults = {
+    // undefined is used here as the undefined global variable in ECMAScript 3 is
+    // mutable (ie. it can be changed by someone else). undefined isn't really being
+    // passed in so we can ensure the value of it is truly undefined. In ES5, undefined
+    // can no longer be modified.
+
+    // window and document are passed through as local variables rather than globals
+    // as this (slightly) quickens the resolution process and can be more efficiently
+    // minified (especially when both are regularly referenced in your plugin).
+
+    // Create the defaults once
+    var pluginName = 'wbSlider',
+        defaults = {
             time : 7000,
             speed : 1250,
             slideRandomly : false,
             prevSlideButton : "#wbSlideLeft", // this can be any selector, as it is passed into the $ function
-            nextSlideButton : "#wbSlideRight", // see above
-            slideClass : "wbSlide",
+            nextSlideButton : "#wbSlideRight", // see above; Note: Change these if you have more than one slider on a page!
+            slideClass : "wbSlide", // these are only class names (don't include the ".") - these don't have to change for each slider, but can.
+            wrapClass : "wb-slide-wrap",
             autoStart : true,
-            direction : "left" // other option is "up"
-        }; // close defaults
+            direction : "left", // other option is "up",
+            buttons : true // white circles at the bottom of the slider
+        };
 
-        // extends defaults with options provided
-        if (options) {
-            $.extend(defaults, options);
-        } //close if
+    // The actual plugin constructor
+    function Plugin( element, options ) {
+        this.element = element;
 
-        // iterate over matched elements
-return this.each(function() {
-    wbSlide = {};
-    wbSlide.slides = $("." + defaults.slideClass);
-    wbSlide.numOfSlides = wbSlide.slides.length;
-    wbSlide.slideWidth = wbSlide.slides.first().outerWidth();
-    wbSlide.slideHeight = wbSlide.slides.first().outerHeight();
-    wbSlide.slider = $(this);
-    wbSlide.init = function(){
-        //set up container
-        wbSlide.slider.wrap("<div class='wbSliderWrap' />");
-        wbSlide.sliderWrap = wbSlide.slider.parent();
-        wbSlide.sliderWrap.css({
+        // jQuery has an extend method which merges the contents of two or 
+        // more objects, storing the result in the first object. The first object
+        // is generally empty as we don't want to alter the default options for
+        // future instances of the plugin
+        this.options = $.extend( {}, defaults, options) ;
+
+        this._defaults = defaults;
+        this._name = pluginName;
+        
+        this.slides = $("." + this.options.slideClass);
+        this.numOfSlides = this.slides.length;
+        this.slideWidth = this.slides.first().outerWidth();
+        this.slideHeight = this.slides.first().outerHeight();
+        this.slider = $(this.element);
+        this.slider.wrap("<div class='" + this.options.wrapClass +"' />");
+        this.sliderWrap = this.slider.parent();
+
+        this.init();
+    }
+
+    Plugin.prototype.init = function () {
+        // Place initialization logic here
+        // You already have access to the DOM element and the options via the instance, 
+        // e.g., this.element and this.options
+        
+        var $this = this;
+
+        $this.sliderWrap.css({
             position : "relative",
-            width : wbSlide.slideWidth,
-            height : wbSlide.slideHeight,
+            width : $this.slideWidth,
+            height : $this.slideHeight,
             overflow : "hidden"
-        }).append("<div class='clearboth' style='clear:both'/>");
+        }).append("<div class='clearfix' style='clear:both'/>");
+
+        // setting css on slider based on options
         var sliderCSSObj;
-        if (defaults.direction == "left"){
+        if ($this.options.direction == "left"){
             sliderCSSObj = {
-                width: wbSlide.slideWidth * wbSlide.numOfSlides
+                width: $this.slideWidth * $this.numOfSlides
             }
-        } else if (defaults.direction == "up") {
+        } else if ($this.options.direction == "up") {
             sliderCSSObj = {
-                height: wbSlide.slideHeight * wbSlide.numOfSlides
+                height: $this.slideHeight * $this.numOfSlides
             }
         }
-        wbSlide.slider.css(sliderCSSObj);
-        wbSlide.slides.first().addClass("first current");
-        wbSlide.slides.last().addClass("last");
-        wbSlide.slides.css({
+        $this.slider.css(sliderCSSObj);
+        $this.slides.first().addClass("first current");
+        $this.slides.last().addClass("last");
+        $this.slides.css({
             "position" : "relative",
             "float" : "left",
             "overflow" : "hidden"
         });
-    };
-    wbSlide.prevSlide = function(){
-        var currentPosIndex = $(wbSlide.slides).filter(".current").index();
-        if (currentPosIndex == 0) {
-            var nextPosIndex = $(wbSlide.slides).filter(".last").index();
-        } else {
-            var nextPosIndex = currentPosIndex - 1; 
-        }
-        if (defaults.direction == "left"){
-            var animateObj = {
-            marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
-        } else if (defaults.direction == "up"){
-            var animateObj = {
-            marginTop : -1 * wbSlide.slideHeight * nextPosIndex }
-        }
-        $(wbSlide.slider).animate(animateObj, defaults.speed, function(){
-                $(wbSlide.slides).filter(".current").removeClass("current");
-                $(wbSlide.slides).eq(nextPosIndex).addClass("current");
-            });
-    };
-    wbSlide.nextSlide = function(){
-        var currentPosIndex = $(wbSlide.slides).filter(".current").index();
-        var lastIndex = $(wbSlide.slides).filter(".last").index();
-        if (currentPosIndex == lastIndex) {
-            var nextPosIndex = 0;
-        } else {
-            var nextPosIndex = currentPosIndex + 1;
-        }
-        if (defaults.direction == "left"){
-            var animateObj = {
-            marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
-        } else if (defaults.direction == "up"){
-            var animateObj = {
-            marginTop : -1 * wbSlide.slideHeight * nextPosIndex }
-        }
-        $(wbSlide.slider).animate(animateObj, defaults.speed, function(){
-                $(wbSlide.slides).filter(".current").removeClass("current");
-                $(wbSlide.slides).eq(nextPosIndex).addClass("current");
-        }); 
-    }
-    
-    wbSlide.autoStart = function(){
-        setInterval(wbSlide.nextSlide, defaults.time);
-    }
-    wbSlide.clickHandle = function(){
-        $(defaults.prevSlideButton).click(function(){
-            wbSlide.prevSlide();
+        // create buttons
+        var buttonhtml = "<div class='wbSlideButtonWrap'>";
+        $this.slides.each(function(i,el){
+            buttonhtml += "<div class='wbSlideButton'></div>";
         });
-        $(defaults.nextSlideButton).click(function(){
-            wbSlide.nextSlide();
+        buttonhtml += "</div>";
+        $this.sliderWrap.append(buttonhtml);
+        $(".wbSlideButton").eq($($this.slides).filter(".current").index()).addClass("current");
+        $($this.sliderWrap).delegate(".wbSlideButton", "click", function(e){
+            $this.changeSlide($(e.target).index());
         });
-    }
-    
-    //call the functions
-    wbSlide.init()
-    wbSlide.clickHandle();
-    if (defaults.autoStart){
-        wbSlide.autoStart();
-    }
-});
 
-} //closing plugin definition
-})(jQuery);
+        $this.changeSlide = function(newIndex){
+            var nextPosIndex = newIndex;
+            if ($this.options.direction == "left"){
+                var animateObj = {
+                marginLeft : -1 * $this.slideWidth * nextPosIndex }
+            } else if (defaults.direction == "up"){
+                var animateObj = {
+                marginTop : -1 * this.slideHeight * nextPosIndex }
+            }
+            $($this.slider).animate(animateObj, $this.options.speed, function(){
+                    $($this.slides).filter(".current").removeClass("current");
+                    $($this.slides).eq(nextPosIndex).addClass("current");
+                });
+            $(".wbSlideButton.current").removeClass("current");
+            $(".wbSlideButton").eq(nextPosIndex).addClass("current");
+            clearInterval($this.interval);
+            $this.autoStart();
+        }
+        $this.prevSlide = function(){
+            $this.slider.trigger("wbSlidePrevStart");
+            var currentPosIndex = $($this.slides).filter(".current").index();
+            if (currentPosIndex == 0) {
+                var nextPosIndex = $($this.slides).filter(".last").index();
+            } else {
+                var nextPosIndex = currentPosIndex - 1; 
+            }
+            if ($this.options.direction == "left"){
+                var animateObj = {
+                marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
+            } else if ($this.options.direction == "up"){
+                var animateObj = {
+                marginTop : -1 * $this.slideHeight * nextPosIndex }
+            }
+            $($this.slider).animate(animateObj, $this.options.speed, function(){
+                    $($this.slides).filter(".current").removeClass("current");
+                    $($this.slides).eq(nextPosIndex).addClass("current");
+                    $this.slider.trigger("wbSlidePrevDone");
+                });
+            $(".wbSlideButton.current").removeClass("current");
+            $(".wbSlideButton").eq(nextPosIndex).addClass("current");
+        };
+        $this.nextSlide = function(){
+            $this.slider.trigger("wbSlideNextStart"); 
+            var currentPosIndex = $($this.slides).filter(".current").index();
+            var lastIndex = $($this.slides).filter(".last").index();
+            if (currentPosIndex == lastIndex) {
+                var nextPosIndex = 0;
+            } else {
+                var nextPosIndex = currentPosIndex + 1;
+            }
+            if ($this.options.direction == "left"){
+                var animateObj = {
+                marginLeft : -1 * $this.slideWidth * nextPosIndex }
+            } else if ($this.options.direction == "up"){
+                var animateObj = {
+                marginTop : -1 * $this.slideHeight * nextPosIndex }
+            }
+            $($this.slider).animate(animateObj, this.options.speed, function(){
+                    $($this.slides).filter(".current").removeClass("current");
+                    $($this.slides).eq(nextPosIndex).addClass("current");
+                    $this.slider.trigger("wbSlideNextDone");
+            });
+            $(".wbSlideButton.current").removeClass("current");
+            $(".wbSlideButton").eq(nextPosIndex).addClass("current");
+        }
+        $this.autoStart = function(){
+            $this.interval = setInterval(function(){
+                $this.slider.trigger("slideControlNext");
+            }, $this.options.time);
+        }
+        $this.clickHandle = function(){
+            $($this.options.prevSlideButton).click(function(){
+                $this.slider.trigger("slideControlPrev");
+            });
+            $($this.options.nextSlideButton).click(function(){
+                $this.slider.trigger("slideControlNext");
+            });
+        }
+        $this.eventHandle = function(){
+            $this.slider.on("slideControlNext", function(){
+                $this.nextSlide();
+            }).on("slideControlPrev", function(){
+                $this.prevSlide();
+            });
+        }
+
+        $this.clickHandle();
+        $this.eventHandle();
+        if ($this.options.autoStart){
+            $this.autoStart();
+        }
+
+    };
+
+    // A really lightweight plugin wrapper around the constructor, 
+    // preventing against multiple instantiations
+    $.fn[pluginName] = function ( options ) {
+        return this.each(function () {
+            if (!$.data(this, 'plugin_' + pluginName)) {
+                $.data(this, 'plugin_' + pluginName, new Plugin( this, options ));
+            }
+        });
+    }
+
+})( jQuery, window, document );
