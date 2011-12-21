@@ -35,7 +35,8 @@
             wrapClass : "wb-slide-wrap",
             autoStart : true,
             direction : "left", // other option is "up",
-            buttons : true // white circles at the bottom of the slider
+            buttons : true, // white circles at the bottom of the slider
+            fade : false // fade transition
         };
 
     // The actual plugin constructor
@@ -78,27 +79,39 @@
 
         // setting css on slider based on options
         var sliderCSSObj;
-        if ($this.options.direction == "left"){
-            sliderCSSObj = {
-                width: $this.slideWidth * $this.numOfSlides
+        if (!$this.options.fade){
+            if ($this.options.direction == "left"){
+                sliderCSSObj = {
+                    width: $this.slideWidth * $this.numOfSlides
+                }
+            } else if ($this.options.direction == "up") {
+                sliderCSSObj = {
+                    height: $this.slideHeight * $this.numOfSlides
+                }
             }
-        } else if ($this.options.direction == "up") {
+            $this.slides.css({
+                "position" : "relative",
+                "float" : "left",
+                "overflow" : "hidden"
+            });
+        } else {
             sliderCSSObj = {
-                height: $this.slideHeight * $this.numOfSlides
-            }
+                    width: $this.slideWidth
+                }
+            $this.slides.css({
+                "position" : "absolute",
+                "top" : "0px",
+                "left" : "0px"
+            });
         }
         $this.slider.css(sliderCSSObj);
         $this.slides.first().addClass("first current");
         $this.slides.last().addClass("last");
-        $this.slides.css({
-            "position" : "relative",
-            "float" : "left",
-            "overflow" : "hidden"
-        });
         // create buttons
         var buttonhtml = "<div class='wbSlideButtonWrap'>";
         $this.slides.each(function(i,el){
             buttonhtml += "<div class='wbSlideButton'></div>";
+            $(el).css({zIndex : 400 - i });
         });
         buttonhtml += "</div>";
         $this.sliderWrap.append(buttonhtml);
@@ -109,17 +122,27 @@
 
         $this.changeSlide = function(newIndex){
             var nextPosIndex = newIndex;
-            if ($this.options.direction == "left"){
-                var animateObj = {
-                marginLeft : -1 * $this.slideWidth * nextPosIndex }
-            } else if (defaults.direction == "up"){
-                var animateObj = {
-                marginTop : -1 * this.slideHeight * nextPosIndex }
-            }
-            $($this.slider).animate(animateObj, $this.options.speed, function(){
+            if (!$this.options.fade){
+                if ($this.options.direction == "left"){
+                    var animateObj = {
+                    marginLeft : -1 * $this.slideWidth * nextPosIndex }
+                } else if (defaults.direction == "up"){
+                    var animateObj = {
+                    marginTop : -1 * this.slideHeight * nextPosIndex }
+                }
+                $($this.slider).animate(animateObj, $this.options.speed, function(){
                     $($this.slides).filter(".current").removeClass("current");
                     $($this.slides).eq(nextPosIndex).addClass("current");
                 });
+            } else {
+                $this.slides.eq(nextPosIndex).fadeIn($this.options.speed, function(){
+                    $($this.slides).each(function(i,el){
+                        if ($(el).index() >= nextPosIndex){ $(el).show(); }
+                    });
+                    $($this.slides).filter(".current").removeClass("current");
+                    $($this.slides).eq(nextPosIndex).addClass("current");
+                });
+            }
             $(".wbSlideButton.current").removeClass("current");
             $(".wbSlideButton").eq(nextPosIndex).addClass("current");
             clearInterval($this.interval);
@@ -133,18 +156,31 @@
             } else {
                 var nextPosIndex = currentPosIndex - 1; 
             }
-            if ($this.options.direction == "left"){
-                var animateObj = {
-                marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
-            } else if ($this.options.direction == "up"){
-                var animateObj = {
-                marginTop : -1 * $this.slideHeight * nextPosIndex }
-            }
-            $($this.slider).animate(animateObj, $this.options.speed, function(){
+            if (!$this.options.fade){
+                if ($this.options.direction == "left"){
+                    var animateObj = {
+                    marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
+                } else if ($this.options.direction == "up"){
+                    var animateObj = {
+                    marginTop : -1 * $this.slideHeight * nextPosIndex }
+                }
+                $($this.slider).animate(animateObj, $this.options.speed, function(){
                     $($this.slides).filter(".current").removeClass("current");
                     $($this.slides).eq(nextPosIndex).addClass("current");
                     $this.slider.trigger("wbSlidePrevDone");
                 });
+            } else {
+                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 8000 }).fadeIn($this.options.speed, function(){
+                    $($this.slides).filter(".current").hide();
+                    $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
+                    $($this.slides).each(function(i,el){
+                        if ($(el).index() >= nextPosIndex){ $(el).show(); }
+                        $($this.slides).filter(".current").removeClass("current");
+                        $($this.slides).eq(nextPosIndex).addClass("current");
+                        $this.slider.trigger("wbSlidePrevDone");
+                    });
+                });
+            }
             $(".wbSlideButton.current").removeClass("current");
             $(".wbSlideButton").eq(nextPosIndex).addClass("current");
         };
@@ -157,18 +193,31 @@
             } else {
                 var nextPosIndex = currentPosIndex + 1;
             }
-            if ($this.options.direction == "left"){
-                var animateObj = {
-                marginLeft : -1 * $this.slideWidth * nextPosIndex }
-            } else if ($this.options.direction == "up"){
-                var animateObj = {
-                marginTop : -1 * $this.slideHeight * nextPosIndex }
-            }
-            $($this.slider).animate(animateObj, this.options.speed, function(){
+            if (!$this.options.fade){
+                if ($this.options.direction == "left"){
+                    var animateObj = {
+                    marginLeft : -1 * $this.slideWidth * nextPosIndex }
+                } else if ($this.options.direction == "up"){
+                    var animateObj = {
+                    marginTop : -1 * $this.slideHeight * nextPosIndex }
+                }
+                $($this.slider).animate(animateObj, this.options.speed, function(){
                     $($this.slides).filter(".current").removeClass("current");
                     $($this.slides).eq(nextPosIndex).addClass("current");
                     $this.slider.trigger("wbSlideNextDone");
-            });
+                });
+            } else {
+                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 8000 }).fadeIn($this.options.speed, function(){
+                    $($this.slides).filter(".current").hide();
+                    $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
+                    $($this.slides).each(function(i,el){
+                        if ($(el).index() >= nextPosIndex){ $(el).show(); }
+                        $($this.slides).filter(".current").removeClass("current");
+                        $($this.slides).eq(nextPosIndex).addClass("current");
+                        $this.slider.trigger("wbSlideNextDone");
+                    });
+                });
+            }
             $(".wbSlideButton.current").removeClass("current");
             $(".wbSlideButton").eq(nextPosIndex).addClass("current");
         }
