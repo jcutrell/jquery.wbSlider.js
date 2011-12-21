@@ -51,12 +51,11 @@
 
         this._defaults = defaults;
         this._name = pluginName;
-        
-        this.slides = $("." + this.options.slideClass);
+        this.slider = $(this.element);
+        this.slides = this.slider.find("." + this.options.slideClass);
         this.numOfSlides = this.slides.length;
         this.slideWidth = this.slides.first().outerWidth();
         this.slideHeight = this.slides.first().outerHeight();
-        this.slider = $(this.element);
         this.slider.wrap("<div class='" + this.options.wrapClass +"' />");
         this.sliderWrap = this.slider.parent();
 
@@ -170,7 +169,7 @@
                     $this.slider.trigger("wbSlidePrevDone");
                 });
             } else {
-                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 8000 }).fadeIn($this.options.speed, function(){
+                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 401 }).fadeIn($this.options.speed, function(){
                     $($this.slides).filter(".current").hide();
                     $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
                     $($this.slides).each(function(i,el){
@@ -207,7 +206,7 @@
                     $this.slider.trigger("wbSlideNextDone");
                 });
             } else {
-                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 8000 }).fadeIn($this.options.speed, function(){
+                $($this.slides).eq(nextPosIndex).hide().css({zIndex : 401 }).fadeIn($this.options.speed, function(){
                     $($this.slides).filter(".current").hide();
                     $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
                     $($this.slides).each(function(i,el){
