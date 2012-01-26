@@ -121,6 +121,7 @@
 
         $this.changeSlide = function(newIndex){
             var nextPosIndex = newIndex;
+            $this.slider.trigger("wbSlideChangeStart", newIndex);
             if (!$this.options.fade){
                 if ($this.options.direction == "left"){
                     var animateObj = {
@@ -132,6 +133,7 @@
                 $($this.slider).animate(animateObj, $this.options.speed, function(){
                     $($this.slides).filter(".current").removeClass("current");
                     $($this.slides).eq(nextPosIndex).addClass("current");
+                    $this.slider.trigger("wbSlideChangeDone", newIndex);
                 });
             } else {
                 $this.slides.eq(nextPosIndex).fadeIn($this.options.speed, function(){
@@ -140,6 +142,7 @@
                     });
                     $($this.slides).filter(".current").removeClass("current");
                     $($this.slides).eq(nextPosIndex).addClass("current");
+                    $this.slider.trigger("wbSlideChangeDone", newIndex);
                 });
             }
             $(".wbSlideButton.current").removeClass("current");

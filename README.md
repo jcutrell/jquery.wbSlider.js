@@ -50,6 +50,15 @@ Future: Trigger dynamic events (like "lastSlide"); Also, add in external "pause"
 * autoStart : true,  
 * direction : "left" *or* "up"  
 
+### Events (quick list)
+*Events that the plugin fires on the jQuery element*
+* wbSlidePrevStart / wbSlidePrevDone
+* wbSlideNextStart / wbSlideNextDone
+* wbSlideChangeStart, <slide index> / wbSlideNextDone, <slide index>
+* slideControlNext / slideControlPrev
+
+
+
 ### Future plugin options:
 *slideRandomly  
 *slideTransition : "fade", "slide"  
