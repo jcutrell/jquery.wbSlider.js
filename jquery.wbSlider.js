@@ -158,7 +158,7 @@
             if (!$this.options.fade){
                 if ($this.options.direction == "left"){
                     var animateObj = {
-                    marginLeft : -1 * wbSlide.slideWidth * nextPosIndex }
+                    marginLeft : -1 * $this.slideWidth * nextPosIndex }
                 } else if ($this.options.direction == "up"){
                     var animateObj = {
                     marginTop : -1 * $this.slideHeight * nextPosIndex }
