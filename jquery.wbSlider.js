@@ -1,4 +1,4 @@
-// wbSlider v. 0.2 - requires jQuery 1.7 !!!
+// wbSlider v. 0.3 - requires jQuery 1.7 !!!
 
 //----- preconditions -----
 // This plugin relies on the following html structure
@@ -31,6 +31,7 @@
             slideRandomly : false,
             prevSlideButton : "#wbSlideLeft", // this can be any selector, as it is passed into the $ function
             nextSlideButton : "#wbSlideRight", // see above; Note: Change these if you have more than one slider on a page!
+            pauseSlideButton : "#wbSlidePause", // see above; Note: Change these if you have more than one slider on a page!
             slideClass : "wbSlide", // these are only class names (don't include the ".") - these don't have to change for each slider, but can.
             wrapClass : "wb-slide-wrap",
             autoStart : true,
@@ -246,19 +247,24 @@
             $($this.options.nextSlideButton).click(function(){
                 $this.slider.trigger("slideControlNext");
             });
+            $($this.options.pauseSlideButton).click(function(){
+                $this.slider.trigger("slideControlPause");
+            });
         }
         $this.eventHandle = function(){
             $this.slider.on("slideControlNext", function(){
                 $this.nextSlide();
             }).on("slideControlPrev", function(){
                 $this.prevSlide();
-            }).on("sliderControlPause", function(){
+            }).on("slideControlPause", function(){
                 if ($this.paused == false){
                     clearInterval($this.interval);
                     $this.paused = true;
+                    $this.slider.addClass("paused");
                 } else {
                     $this.autoStart();
                     $this.paused = false;
+                    $this.slider.removeClass("paused");
                 }
             });
         }
