@@ -263,9 +263,11 @@
                     $this.slider.addClass("paused");
                 }
             }).on("slideControlPlay", function(){
-                $this.autoStart();
-                $this.paused = false;
-                $this.slider.removeClass("paused");
+                if ($this.paused == true){
+                    $this.autoStart();
+                    $this.paused = false;
+                    $this.slider.removeClass("paused");
+                }
             });
         }
 
