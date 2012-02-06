@@ -32,10 +32,12 @@ Subscribe to:
 
 Trigger:
 
-*(causes transitions)*
+*(publicized controls for the slider)*
 
 * slideControlNext
 * slideControlPrev
+* slideControlPause
+* slideControlPlay
 
 This will allow other awesome stuff to happen, like multiple sliders and whatnot.
 Future: Trigger dynamic events (like "lastSlide"); Also, add in external "pause"/"play" event triggers
@@ -56,6 +58,7 @@ Future: Trigger dynamic events (like "lastSlide"); Also, add in external "pause"
 * wbSlideNextStart / wbSlideNextDone  
 * wbSlideChangeStart, (slide index) / wbSlideNextDone, (slide index)  
 * slideControlNext / slideControlPrev  
+* slideControlPause / slideControlPlay  
 
 ### Future plugin options:
 *slideRandomly  

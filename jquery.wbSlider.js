@@ -261,11 +261,11 @@
                     clearInterval($this.interval);
                     $this.paused = true;
                     $this.slider.addClass("paused");
-                } else {
-                    $this.autoStart();
-                    $this.paused = false;
-                    $this.slider.removeClass("paused");
                 }
+            }).on("slideControlPlay", function(){
+                $this.autoStart();
+                $this.paused = false;
+                $this.slider.removeClass("paused");
             });
         }
 
