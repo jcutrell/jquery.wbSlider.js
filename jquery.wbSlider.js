@@ -58,6 +58,7 @@
         this.slideHeight = this.slides.first().outerHeight();
         this.slider.wrap("<div class='" + this.options.wrapClass +"' />");
         this.sliderWrap = this.slider.parent();
+        this.paused = false;
 
         this.init();
     }
@@ -78,6 +79,7 @@
 
         // setting css on slider based on options
         var sliderCSSObj;
+
         if (!$this.options.fade){
             if ($this.options.direction == "left"){
                 sliderCSSObj = {
@@ -105,6 +107,9 @@
         }
         $this.slider.css(sliderCSSObj);
         $this.slides.first().addClass("first current");
+        
+        if ($this.options.fade == true){ $($this.slides).not(".current").hide(); }
+
         $this.slides.last().addClass("last");
         // create buttons
         var buttonhtml = "<div class='wbSlideButtonWrap'>";
@@ -116,6 +121,7 @@
         $this.sliderWrap.append(buttonhtml);
         $(".wbSlideButton").eq($($this.slides).filter(".current").index()).addClass("current");
         $($this.sliderWrap).delegate(".wbSlideButton", "click", function(e){
+            $this.paused = false;
             $this.changeSlide($(e.target).index());
         });
 
@@ -136,6 +142,7 @@
                     $this.slider.trigger("wbSlideChangeDone", newIndex);
                 });
             } else {
+                $this.slides.filter(".current").fadeOut($this.options.speed);
                 $this.slides.eq(nextPosIndex).fadeIn($this.options.speed, function(){
                     $($this.slides).each(function(i,el){
                         if ($(el).index() >= nextPosIndex){ $(el).show(); }
@@ -172,6 +179,7 @@
                     $this.slider.trigger("wbSlidePrevDone");
                 });
             } else {
+                $($this.slides).filter(".current").fadeOut($this.options.speed);
                 $($this.slides).eq(nextPosIndex).hide().css({zIndex : 401 }).fadeIn($this.options.speed, function(){
                     $($this.slides).filter(".current").hide();
                     $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
@@ -179,6 +187,7 @@
                         if ($(el).index() >= nextPosIndex){ $(el).show(); }
                         $($this.slides).filter(".current").removeClass("current");
                         $($this.slides).eq(nextPosIndex).addClass("current");
+                        $($this.slides).not(".current").hide();
                         $this.slider.trigger("wbSlidePrevDone");
                     });
                 });
@@ -209,6 +218,7 @@
                     $this.slider.trigger("wbSlideNextDone");
                 });
             } else {
+                $($this.slides).filter(".current").fadeOut($this.options.speed);
                 $($this.slides).eq(nextPosIndex).hide().css({zIndex : 401 }).fadeIn($this.options.speed, function(){
                     $($this.slides).filter(".current").hide();
                     $($this.slides).eq(nextPosIndex).css({zIndex : 400 - nextPosIndex});
@@ -216,6 +226,7 @@
                         if ($(el).index() >= nextPosIndex){ $(el).show(); }
                         $($this.slides).filter(".current").removeClass("current");
                         $($this.slides).eq(nextPosIndex).addClass("current");
+                        $($this.slides).not(".current").hide();
                         $this.slider.trigger("wbSlideNextDone");
                     });
                 });
@@ -241,6 +252,14 @@
                 $this.nextSlide();
             }).on("slideControlPrev", function(){
                 $this.prevSlide();
+            }).on("sliderControlPause", function(){
+                if ($this.paused == false){
+                    clearInterval($this.interval);
+                    $this.paused = true;
+                } else {
+                    $this.autoStart();
+                    $this.paused = false;
+                }
             });
         }
 
