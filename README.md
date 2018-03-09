@@ -1,3 +1,11 @@
+# Don't use this.
+
+I've left it here for posterity, but here's a few points of concern to dissuade you from using this plugin:
+
+1. If you can [avoid using a slider/carousel](http://shouldiuseacarousel.com/), you may be better off utilizing a different design pattern all together.
+2. This plugin is way out of date, and has no associated testing.
+3. If you do need to use a slider, use something like [Slick.js](http://kenwheeler.github.io/slick/) - 
+
 # jquery.wbSlider.js
 *Created for Whiteboard Network*
 ### Simple usage:
